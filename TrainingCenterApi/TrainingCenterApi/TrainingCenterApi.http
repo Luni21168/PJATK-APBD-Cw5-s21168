@@ -1,6 +1,94 @@
 @TrainingCenterApi_HostAddress = http://localhost:5169
 
-GET {{TrainingCenterApi_HostAddress}}/weatherforecast/
-Accept: application/json
+### GET all rooms
+GET {{TrainingCenterApi_HostAddress}}/api/rooms
 
-###
+### GET room by id
+GET {{TrainingCenterApi_HostAddress}}/api/rooms/1
+
+### GET rooms with filters
+GET {{TrainingCenterApi_HostAddress}}/api/rooms?minCapacity=20&hasProjector=true&activeOnly=true
+
+### GET all reservations
+GET {{TrainingCenterApi_HostAddress}}/api/reservations
+
+### GET reservation by id
+GET {{TrainingCenterApi_HostAddress}}/api/reservations/1
+
+### GET reservations with filters
+GET {{TrainingCenterApi_HostAddress}}/api/reservations?date=2026-05-10&status=confirmed&roomId=1
+
+### POST room
+POST {{TrainingCenterApi_HostAddress}}/api/rooms
+Content-Type: application/json
+
+{
+  "name": "Lab 305",
+  "buildingCode": "D",
+  "floor": 3,
+  "capacity": 30,
+  "hasProjector": true,
+  "isActive": true
+}
+
+### PUT room
+PUT {{TrainingCenterApi_HostAddress}}/api/rooms/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Lab 101 Updated",
+  "buildingCode": "A",
+  "floor": 1,
+  "capacity": 25,
+  "hasProjector": true,
+  "isActive": true
+}
+
+### DELETE room with reservations - should return 409 Conflict
+DELETE {{TrainingCenterApi_HostAddress}}/api/rooms/1
+
+### POST reservation correct
+POST {{TrainingCenterApi_HostAddress}}/api/reservations
+Content-Type: application/json
+
+{
+  "roomId": 2,
+  "organizerName": "Anna Kowalska",
+  "topic": "Warsztaty z HTTP i REST",
+  "date": "2026-05-11",
+  "startTime": "10:00:00",
+  "endTime": "12:30:00",
+  "status": "confirmed"
+}
+
+### POST reservation conflict - should return 409 Conflict
+POST {{TrainingCenterApi_HostAddress}}/api/reservations
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "organizerName": "Test Conflict",
+  "topic": "Overlapping meeting",
+  "date": "2026-05-10",
+  "startTime": "11:00:00",
+  "endTime": "13:00:00",
+  "status": "confirmed"
+}
+
+### POST invalid reservation time - should return 400 Bad Request
+POST {{TrainingCenterApi_HostAddress}}/api/reservations
+Content-Type: application/json
+
+{
+  "roomId": 2,
+  "organizerName": "Invalid Time",
+  "topic": "Wrong time",
+  "date": "2026-05-11",
+  "startTime": "12:30:00",
+  "endTime": "10:00:00",
+  "status": "confirmed"
+}
+
+### DELETE reservation
+DELETE {{TrainingCenterApi_HostAddress}}/api/reservations/4
